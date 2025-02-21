@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Stok extends Model
 {
     use HasFactory;
-    protected $table = 'stoks'; // Pastikan tabel sesuai dengan nama di database
+    protected $table = 'stoks'; //Menentukan nama tabel yang digunakan model ini
 
+    //Menentukan atribut yang dapat diisi secara massal
     protected $fillable = [
-        'nama_barang',  // Tambahkan ini
-        'jumlah_barang' // Tambahkan ini
+        'nama_barang',  
+        'jumlah_barang' 
     ];
 }
