@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\StokController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StokController; //Mengimpor StokController agar dapat digunakan untuk menangani permintaan terkait stok.
+use Illuminate\Support\Facades\Route; //Mengimpor Route agar bisa mendefinisikan rute aplikasi.
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Jika pengguna mengakses beranda (/), maka akan diarahkan ke tampilan welcome.blade.php.
+ */
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('stoks', StokController::class);
+Route::resource('stoks', StokController::class); //Laravel secara otomatis membuat rute CRUD untuk stok berdasarkan StokController.
