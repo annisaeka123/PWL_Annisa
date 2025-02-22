@@ -20,9 +20,14 @@ use App\Http\Controllers\PhotoController;
 |
 */
 
+//controller
 Route::get('/hello', [WelcomeController::class,'hello']);
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/about', [AboutController::class, 'about']);
 Route::get('/articles/{id}', [ArticleController::class, 'articles']);
 Route::resource('photos', PhotoController::class)->only(['index', 'show']);
 Route::resource('photos', PhotoController::class)->except(['create', 'store', 'update', 'destroy']);
+
+//View
+Route::get('/greeting', [WelcomeController::class,'greeting']);
+
