@@ -56,8 +56,17 @@ use App\Http\Controllers\PhotoController;
 //Route::get('/about', [PageController::class, 'about']); 
 //Route::get('/articles/{id)', [PageController::class, 'articles']);
 
-Route::get('/', [HomeController::class, 'index']); 
-Route::get('/about', [AboutController::class, 'about']); 
-Route::get('/articles/{id}', [ArticleController::class, 'articles']); 
-Route:: resource('photos', Photocontroller::class)->only(['index', 'show']); 
-Route::resource('photos', PhotoController::class)->except(['create', 'store', 'update', 'destroy']);
+//Route::get('/', [HomeController::class, 'index']); 
+//Route::get('/about', [AboutController::class, 'about']); 
+//Route::get('/articles/{id}', [ArticleController::class, 'articles']); 
+//Route:: resource('photos', Photocontroller::class)->only(['index', 'show']); 
+//Route::resource('photos', PhotoController::class)->except(['create', 'store', 'update', 'destroy']);
+
+/**
+ * View
+ */
+//Route::get('/greeting', function () { 
+//    return view ('blog.hello', ['name' => 'annisa']); 
+//});
+
+Route::get('/greeting', [WelcomeController::class, 'greeting']);
