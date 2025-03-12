@@ -13,26 +13,32 @@ class UserController extends Controller
         /**
          * Jobsheet 4
          */
+         
 
+         //PRAKTIKUM 2.6 - LANGKAH 2
+        $user = UserModel::all();
+        return view('user', ['data' => $user]);
+
+        /*************************************************************** */
 
         //PRAKTIKUM 2.5 - LANGKAH 3
-        $user = UserModel::create([
-            'username' => 'manager11',
-            'nama' => 'Manager11',
-            'password' => Hash::make('12345'),
-            'level_id' => 2,
-        ]);
+        // $user = UserModel::create([
+        //     'username' => 'manager11',
+        //     'nama' => 'Manager11',
+        //     'password' => Hash::make('12345'),
+        //     'level_id' => 2,
+        // ]);
         
-        $user->username = 'manager12';
+        // $user->username = 'manager12';
         
-        $user->save();
+        // $user->save();
         
-        $user->wasChanged(); // true
-        $user->wasChanged('username'); // true
-        $user->wasChanged(['username', 'level_id']); // true
-        $user->wasChanged('nama'); // false
+        // $user->wasChanged(); // true
+        // $user->wasChanged('username'); // true
+        // $user->wasChanged(['username', 'level_id']); // true
+        // $user->wasChanged('nama'); // false
         
-        dd($user->wasChanged(['nama', 'username'])); // true
+        // dd($user->wasChanged(['nama', 'username'])); // true
 
         //PRAKTIKUM 2.5 - LANGKAH 1
         // $user = UserModel::create([
@@ -158,11 +164,11 @@ class UserController extends Controller
         //return view('user', ['data' => $user]);
 
         //PARKTIKUM 2.1 - LANGKAH 10
-        $user = UserModel::findOr(20, ['username', 'nama'], function () {
-            abort(404);
-        });
+        // $user = UserModel::findOr(20, ['username', 'nama'], function () {
+        //     abort(404);
+        // });
         
-        return view('user', ['data' => $user]);
+        // return view('user', ['data' => $user]);
 
         //***************************************************************************************** */
         //PRAKTIKUM 1
@@ -192,6 +198,57 @@ class UserController extends Controller
         //];
         //UserModel::where('username', 'customer-1')->update($data); //update data user
 
+    }
+
+
+    //PRAKTIKUM 2.6 - LANGKAH 6
+    public function tambah()
+    {
+        return view('user_tambah');
+    }
+
+    //PRAKTIKUM 2.6 - LANGKAH 9
+    public function tambah_simpan(Request $request)
+    {
+        UserModel::create([
+            'username' => $request->username,
+            'nama' => $request->nama,
+            'password' => Hash::make($request->password),
+            'level_id' => $request->level_id
+        ]);
+
+        return redirect('/user');
+    }
+
+    //PRAKTIKUM 2.6 - LANGKAH 13
+    public function ubah($id)
+    {
+        $user = UserModel::find($id);
+        return view('user_ubah', ['data' => $user]);
+    }
+
+    //PRAKTIKUM 2.6 - LANGKAH 16
+    public function ubah_simpan($id, Request $request)
+    {
+        $user = UserModel::find($id);
+
+        $user->username = $request->username;
+        $user->nama = $request->nama;
+        $user->password = Hash::make($request->password);
+        $user->level_id = $request->level_id;
+
+        $user->save();
+
+        return redirect('/user');
+    }
+
+    //PRAKTIKUM 2.6 - LANGKAH 19
+    public function hapus($id)
+    {
+        $user = UserModel::find($id);
+        $user->delete();
+
+        return redirect('/user');
     }
 }
 
