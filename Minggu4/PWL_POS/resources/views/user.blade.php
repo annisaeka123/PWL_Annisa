@@ -10,28 +10,28 @@
         <!--JOBSHEET 4-->
 
         <!-- PRAKTIKUM 2.3 -->
-        <tr>
+        {{-- <tr>
             <th>Jumlah Pengguna</th>
         </tr>
         <tr>
             <td>{{ $data }}</td>
-        </tr>
+        </tr> --}}
 
         <!--------------------------------------->
-        <!--PRAKTIKUM 2.1-->
-        {{-- <tr>
+        <!--PRAKTIKUM 2.1/2.4-->
+        <tr>
             <th>ID</th>
             <th>Username</th>
             <th>Nama</th>
             <th>ID Level Pengguna</th>
-        </tr> --}}
+        </tr>
         {{-- @foreach ($data as $d) --}}
-        {{-- <tr>
+        <tr>
             <td>{{ $data->user_id }}</td>
             <td>{{ $data->username }}</td>
             <td>{{ $data->nama }}</td>
             <td>{{ $data->level_id }}</td>
-        </tr> --}}
+        </tr>
         {{-- @endforeach --}}
 
     </table>
