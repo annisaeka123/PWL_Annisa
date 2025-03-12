@@ -14,10 +14,19 @@ class UserController extends Controller
          * Jobsheet 4
          */
          
-
-         //PRAKTIKUM 2.6 - LANGKAH 2
-        $user = UserModel::all();
+        
+        //PRAKTIKUM 2.7 - LANGKAH 4
+        $user = UserModel::with('level')->get();
         return view('user', ['data' => $user]);
+
+        //PRAKTIKUM 2.7 - LANGKAH 2
+        //  $user = UserModel::with('level')->get();
+        //  dd($user);
+
+         /*************************************************************** */
+        //PRAKTIKUM 2.6 - LANGKAH 2
+        // $user = UserModel::all();
+        // return view('user', ['data' => $user]);
 
         /*************************************************************** */
 
