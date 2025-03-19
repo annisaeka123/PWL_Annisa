@@ -310,6 +310,12 @@ return [
             'topnav_right' => true,
         ],
 
+        [
+            'text' => 'Manage Kategori',
+            'url'  => 'kategori',
+            'icon' => 'fas fa-list',
+        ],
+
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',

@@ -33,6 +33,35 @@ class KategoriController extends Controller
         return redirect('/kategori');
     }
 
+    //TUGAS
+    public function edit($id)
+    {
+        $kategori = KategoriModel::findOrFail($id);
+        return view('kategori.edit', compact('kategori'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $kategori = KategoriModel::findOrFail($id);
+        $kategori->update([
+            'kategori_kode' => $request->kodeKategori,
+            'kategori_nama' => $request->namaKategori,
+        ]);
+
+        return redirect('/kategori')->with('success', 'Kategori berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $kategori = KategoriModel::findOrFail($id);
+        $kategori->delete();
+
+        return response()->json(['success' => 'Kategori berhasil dihapus!']);
+    }
+
+    
+
+
     //JOBSHEET 4
     // public function index()
     // {
