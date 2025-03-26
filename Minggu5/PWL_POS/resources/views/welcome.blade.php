@@ -1,30 +1,4 @@
-@extends('layouts.app')
-
-{{-- Konfigurasi bagian tata letak --}}
-@section('subtitle', 'Selamat Datang')
-@section('content_header_title', 'Beranda')
-@section('content_header_subtitle', 'Selamat Datang')
-
-{{-- Isi utama halaman --}}
-@section('content_body')
-    <p>Selamat datang di panel admin yang indah ini.</p>
-@stop
-
-{{-- Tambahkan CSS tambahan --}}
-@push('css')
-    {{-- Tambahkan stylesheet tambahan di sini --}}
-    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@endpush
-
-{{-- Tambahkan skrip tambahan --}}
-@push('js')
-    <script>
-        console.log("Hai, saya menggunakan paket Laravel-AdminLTE!");
-    </script>
-@endpush
-
-
-{{-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -156,4 +130,4 @@
             </div>
         </div>
     </body>
-</html> --}}
+</html>
