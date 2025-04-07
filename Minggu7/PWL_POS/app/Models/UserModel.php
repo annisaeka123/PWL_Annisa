@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable; // Implementasi class Au
 
 class UserModel extends Authenticatable
 {
+    // Praktikum 1
     use HasFactory;
 
     protected $table = 'm_user';
@@ -29,6 +30,23 @@ class UserModel extends Authenticatable
     public function level(): BelongsTo
     {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
+    // Praktikum 2
+    /**
+     * Mendapatkan nama role
+     */
+    public function getRoleName(): string
+    {
+        return $this->level->level_nama;
+    }
+
+    /**
+     * Cek apakah user memiliki role tertentu
+     */
+    public function hasRole($role): bool
+    {
+        return $this->level->level_kode == $role;
     }
 }
 
