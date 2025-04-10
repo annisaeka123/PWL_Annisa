@@ -2,16 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PenjualanDetailModel;
+use App\Models\PenjualanModel;
+use App\Models\BarangModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PenjualanDetailController extends Controller
 {
-    public function Index()
+    public function index()
     {
+        $data = PenjualanDetailModel::with(['penjualan', 'barang'])->get();
+        return view('penjualan_detail', compact('data'));
+    }
 
-        $data = DB::select('select * from t_penjualan_detail');
-        return view('penjualan_detail', ['data' => $data]);
+    public function tambah()
+    {
+        $penjualan = PenjualanModel::all();
+        $barang = BarangModel::all();
+        return view('penjualan_detail_tambah', compact('penjualan', 'barang'));
+    }
 
+    public function tambah_simpan(Request $request)
+    {
+        PenjualanDetailModel::create($request->all());
+        return redirect('penjualan_detail');
+    }
+
+    public function ubah($id)
+    {
+        $data = PenjualanDetailModel::find($id);
+        $penjualan = PenjualanModel::all();
+        $barang = BarangModel::all();
+        return view('penjualan_detail_ubah', compact('data', 'penjualan', 'barang'));
+    }
+
+    public function ubah_simpan(Request $request, $id)
+    {
+        $data = PenjualanDetailModel::find($id);
+        $data->update($request->all());
+        return redirect('penjualan_detail');
+    }
+
+    public function hapus($id)
+    {
+        PenjualanDetailModel::find($id)->delete();
+        return redirect('penjualan_detail');
     }
 }
