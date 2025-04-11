@@ -33,7 +33,7 @@ class PenjualanDetailController extends Controller
         $data = PenjualanDetailModel::find($id);
         $penjualan = PenjualanModel::all();
         $barang = BarangModel::all();
-        return view('penjualan_detail_ubah', compact('data', 'penjualan', 'barang'));
+        return view('penjualanDetail_ubah', compact('data', 'penjualan', 'barang'));
     }
 
     public function ubah_simpan(Request $request, $id)
@@ -47,5 +47,23 @@ class PenjualanDetailController extends Controller
     {
         PenjualanDetailModel::find($id)->delete();
         return redirect('penjualan_detail');
+    }
+
+    public function show($id)
+    {
+        $detail = PenjualanDetailModel::with(['barang', 'penjualan'])->find($id);
+
+        $breadcrumb = (object) [
+            'title' => 'Detail Penjualan',
+            'list' => ['Home', 'Transaksi Penjualan', 'Detail']
+        ];
+
+        $page = (object) [
+            'title' => 'Detail data Transaksi Penjualan'
+        ];
+
+        $activeMenu = 'penjualanDetail';
+
+        return view('penjualanDetail.index', compact('breadcrumb', 'page', 'detail', 'activeMenu'));
     }
 }
