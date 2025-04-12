@@ -64,6 +64,12 @@
                   <p>Transaksi Penjualan</p>
               </a>
           </li>
+          {{-- button logout --}}
+          <li class="mt-5">
+            <a href="{{ url('/logout') }}" class="nav-link {{ ($activeMenu == 'logout') ? 'active' : '' }}">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </a>
+         </li>
       </ul>
   </nav>
 </div>
