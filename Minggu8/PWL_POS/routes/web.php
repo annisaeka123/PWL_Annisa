@@ -30,10 +30,18 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::get('/level', [LevelController::class, 'index']);
         Route::post('/level/list', [LevelController::class, 'list']); // untuk list json datatables
         Route::get('/level/create', [LevelController::class, 'create']);
-        Route::post('/level', [LevelController::class, 'store']);
+        Route::get('/level/create_ajax', [LevelController::class, 'create_ajax']);
+        Route::post('/level', [LevelController::class, 'show']);
+        Route::post('/level/store_ajax', [LevelController::class, 'store_ajax']);
         Route::get('/level/{id}/edit', [LevelController::class, 'edit']); // untuk tampilkan form edit
+        Route::get('/level/{id}/edit_ajax', [LevelController::class, 'edit_ajax']); // untuk tampilkan form edit
         Route::put('/level/{id}', [LevelController::class, 'update']); // untuk proses update data
-        Route::delete('/level/{id}', [LevelController::class, 'destroy']); // untuk proses hapus data
+        Route::put('/level/{id}/update_ajax', [LevelController::class, 'update_ajax']); // untuk proses update data
+        Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']); // Untuk tampilkan form confirm delete level Ajax
+        Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']); // Untuk hapus data level Ajax
+        Route::delete('/{id}', [LevelController::class, 'destroy']); // menghapus data level
+        Route::get('/level/import', [LevelController::class, 'import']); // ajax form upload excel
+        Route::post('/level/import_ajax', [LevelController::class, 'import_ajax']); // ajax import excel
     });
 
     // route Barang
@@ -69,6 +77,8 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::put('/user/{id}/update_ajax', [UserController::class, 'update_ajax']); // ajax update
         Route::get('/user/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); // ajax form confirm
         Route::delete('/user/{id}/delete_ajax', [UserController::class, 'delete_ajax']); // ajax delete
+        Route::get('/user/import', [UserController::class, 'import']); // ajax form upload excel
+        Route::post('/user/import_ajax', [UserController::class, 'import_ajax']); // ajax import excel
     });
 
     // route Kategori Barang
@@ -81,6 +91,8 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::put('/kategori/{id}/update_ajax', [KategoriController::class, 'update_ajax']); // ajax update
         Route::get('/kategori/{id}/delete_ajax', [KategoriController::class, 'confirm_ajax']); // ajax form confirm
         Route::delete('/kategori/{id}/delete_ajax', [KategoriController::class, 'delete_ajax']); // ajax delete
+        Route::get('/kategori/import', [KategoriController::class, 'import']); // ajax form upload excel
+        Route::post('/kategori/import_ajax', [kategoriController::class, 'import_ajax']); // ajax import excel
     });
 
     // route Kategori Barang
@@ -99,6 +111,8 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::put('/stok/{id}/update_ajax', [StokController::class, 'update_ajax']); // ajax update
         Route::get('/stok/{id}/delete_ajax', [StokController::class, 'confirm_ajax']); // ajax form confirm
         Route::delete('/stok/{id}/delete_ajax', [StokController::class, 'delete_ajax']); // ajax delete
+        Route::get('/stok/import', [StokController::class, 'import']); // ajax form upload excel
+        Route::post('/stok/import_ajax', [StokController::class, 'import_ajax']); // ajax import excel
     });
     
     // route Supplier
@@ -111,6 +125,8 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::put('/supplier/{id}/update_ajax', [SupplierController::class, 'update_ajax']); // ajax update
         Route::get('/supplier/{id}/delete_ajax', [SupplierController::class, 'confirm_ajax']); // ajax form confirm
         Route::delete('/supplier/{id}/delete_ajax', [SupplierController::class, 'delete_ajax']); // ajax delete
+        Route::get('/supplier/import', [SupplierController::class, 'import']); // ajax form upload excel
+        Route::post('/supplier/import_ajax', [SupplierController::class, 'import_ajax']); // ajax import excel
     });
     
 });
