@@ -328,6 +328,63 @@ class UserController extends Controller
         return redirect('/');
     }
 
+    public function export_excel()
+    {
+        // Ambil data user beserta nama level-nya
+        $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
+            ->with('level')
+            ->orderBy('nama')
+            ->get();
+    
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Username');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'Level');
+    
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+    
+        // Isi data user
+        $baris = 2;
+        $no = 1;
+        foreach ($users as $user) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $user->username);
+            $sheet->setCellValue('C' . $baris, $user->nama);
+            $sheet->setCellValue('D' . $baris, $user->level ? $user->level->level_nama : '-');
+            $baris++;
+            $no++;
+        }
+    
+        // Set auto width kolom
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+    
+        // Set judul sheet
+        $sheet->setTitle('Data User');
+    
+        // Simpan dan kirim file ke browser
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_User_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
+        // Header response agar langsung download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+    
+        $writer->save('php://output');
+        exit;
+    }
+
 }
 
 

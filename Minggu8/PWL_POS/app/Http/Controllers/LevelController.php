@@ -283,6 +283,50 @@ class LevelController extends Controller
         return redirect('/');
     }
 
+    public function export_excel()
+    {
+        // Ambil semua data level
+        $levels = LevelModel::select('level_id', 'level_kode', 'level_nama')->orderBy('level_nama')->get();
+    
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Level');
+        $sheet->setCellValue('C1', 'Nama Level');
+    
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+    
+        // Isi data
+        $baris = 2;
+        $no = 1;
+        foreach ($levels as $level) {
+            $sheet->setCellValue('A' . $baris, $no++);
+            $sheet->setCellValue('B' . $baris, $level->level_kode);
+            $sheet->setCellValue('C' . $baris, $level->level_nama);
+            $baris++;
+        }
+    
+        // Set kolom auto width
+        foreach (range('A', 'C') as $kolom) {
+            $sheet->getColumnDimension($kolom)->setAutoSize(true);
+        }
+    
+        // Nama file
+        $filename = 'Data_Level_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
+        // Header untuk download file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+    
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+
 }
 
 

@@ -327,6 +327,65 @@ class SupplierController extends Controller
         return redirect('/');
     }
 
+    public function export_excel()
+    {
+        // Ambil data supplier
+        $suppliers = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')
+                        ->orderBy('supplier_nama')
+                        ->get();
+    
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Supplier');
+        $sheet->setCellValue('C1', 'Nama Supplier');
+        $sheet->setCellValue('D1', 'Alamat');
+    
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true); // Tebal header
+    
+        // Isi data
+        $no = 1;
+        $baris = 2;
+    
+        foreach ($suppliers as $supplier) {
+            $sheet->setCellValue('A' . $baris, $no++);
+            $sheet->setCellValue('B' . $baris, $supplier->supplier_kode);
+            $sheet->setCellValue('C' . $baris, $supplier->supplier_nama);
+            $sheet->setCellValue('D' . $baris, $supplier->supplier_alamat);
+            $baris++;
+        }
+    
+        // Auto-size kolom
+        foreach (range('A', 'D') as $kolom) {
+            $sheet->getColumnDimension($kolom)->setAutoSize(true);
+        }
+    
+        // Judul Sheet
+        $sheet->setTitle('Data Supplier');
+    
+        // Set nama file
+        $filename = 'Data Supplier ' . date('Y-m-d H:i:s') . '.xlsx';
+    
+        // Header HTTP untuk download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+    
+        // Simpan dan kirim ke output
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+    
+
 }
 
 
