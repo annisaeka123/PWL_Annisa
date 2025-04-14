@@ -313,6 +313,70 @@ class StokController extends Controller
         return redirect('/');
     }
 
+    public function export_excel()
+    {
+        // Ambil data stok yang akan di export
+        $stok = StokModel::with(['barang', 'supplier', 'user'])
+                         ->orderBy('stok_tanggal', 'desc')
+                         ->get();
+    
+        // Load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet(); // Ambil sheet yang aktif
+    
+        // Set header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Barang');
+        $sheet->setCellValue('C1', 'Nama Supplier');
+        $sheet->setCellValue('D1', 'Nama User');
+        $sheet->setCellValue('E1', 'Tanggal');
+        $sheet->setCellValue('F1', 'Jumlah');
+    
+        // Set style header menjadi bold
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+    
+        $no = 1; // Nomor urut
+        $baris = 2; // Baris data dimulai dari baris ke 2
+    
+        // Isi data stok ke dalam excel
+        foreach ($stok as $s) {
+            $sheet->setCellValue('A'.$baris, $no++);
+            $sheet->setCellValue('B'.$baris, $s->barang->barang_nama ?? '-');
+            $sheet->setCellValue('C'.$baris, $s->supplier->supplier_nama ?? '-');
+            $sheet->setCellValue('D'.$baris, $s->user->nama ?? '-');
+            $sheet->setCellValue('E'.$baris, $s->stok_tanggal);
+            $sheet->setCellValue('F'.$baris, $s->stok_jumlah);
+            $baris++;
+        }
+    
+        // Set auto size untuk setiap kolom
+        foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+    
+        // Set title sheet
+        $sheet->setTitle('Data Stok');
+    
+        // Nama file
+        $filename = 'Data Stok ' . date('Y-m-d H:i:s') . '.xlsx';
+    
+        // Header untuk download Excel
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+    
+        // Simpan ke output
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+    
+
 }
 
 
