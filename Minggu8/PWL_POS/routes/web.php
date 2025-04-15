@@ -9,6 +9,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 
 Route::pattern('id', '[0-9]+'); // artinya ketika ada parameter {id}, maka harus berupa angka
@@ -140,6 +141,11 @@ Route::middleware('auth')->group(function(){ // artinya semua route di dalam gro
         Route::get('/supplier/export_excel',[SupplierController::class,'export_excel']); // export excel
         Route::get('/supplier/export_pdf',[SupplierController::class,'export_pdf']); // export pdf
     });
+
+    // Route profile
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update-foto', [ProfileController::class, 'updateFoto'])->name('profile.updateFoto');
     
 });
 
