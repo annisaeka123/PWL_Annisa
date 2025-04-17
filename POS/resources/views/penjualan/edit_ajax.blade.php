@@ -35,9 +35,9 @@
                         <small id="error-penjualan_kode" class="form-text text-danger"></small>
                     </div>
                     <div class="form-group">
-                        <label for="user_id">Pengguna</label>
+                        <label for="user_id">Pegawai</label>
                         <select name="user_id" id="user_id" class="form-control" required>
-                            <option value="">- Pilih Pengguna -</option>
+                            <option value="">- Pilih Pegawai -</option>
                             @foreach ($user as $u)
                                 <option value="{{ $u->user_id }}">{{ $u->nama }}</option>
                             @endforeach

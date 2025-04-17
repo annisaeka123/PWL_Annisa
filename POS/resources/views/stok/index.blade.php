@@ -5,8 +5,10 @@
     <div class="card-header">
         <h3 class="card-title">{{ $page->title }}</h3>
         <div class="card-tools">
-            <a class="btn btn-sm btn-primary mt-1" href="{{ url('stok/create') }}">Tambah</a>
-            <button onclick="modalAction('{{ url('stok/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
+            <button onclick="modalAction('{{ url('/stok/import') }}')" class="btn btn-sm btn-info mt-1">Import Stok</button>
+            <a href="{{ url('/stok/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Stok</a>
+            <a href="{{ url('/stok/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Stok</a>
+            <button onclick="modalAction('{{ url('stok/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Stok</button>
         </div>
     </div>
     <div class="card-body">
@@ -22,7 +24,7 @@
                     <th>ID</th>
                     <th>Supplier</th>
                     <th>Barang</th>
-                    <th>Pengguna</th>
+                    <th>Pegawai</th>
                     <th>Tanggal Stok</th>
                     <th>Jumlah Stok</th>
                     <th>Aksi</th>
@@ -75,7 +77,7 @@
                     orderable: true,
                     searchable: true
                 }, {
-                    data: "user.username",
+                    data: "user.nama",
                     className: "",
                     orderable: true,
                     searchable: true

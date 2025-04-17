@@ -19,8 +19,12 @@
                 <td>{{ $detail->penjualan->penjualan_id }}</td>
             </tr>
             <tr>
-                <th>ID Barang</th>
-                <td>{{ $detail->barang->barang_id }}</td>
+                <th>Kode Transaksi Penjualan</th>
+                <td>{{ $detail->penjualan->penjualan_kode }}</td>
+            </tr>
+            <tr>
+                <th>Nama Barang</th>
+                <td>{{ $detail->barang->barang_nama }}</td>
             </tr>
             <tr>
                 <th>Harga Total</th>

@@ -20,25 +20,28 @@
                     <small id="error-barang_id" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label for="supplier_id">Supplier</label>
-                    <select name="supplier_id" id="supplier_id" class="form-control" required>
-                        <option value="">- Pilih Supplier -</option>
-                        @foreach ($supplier as $sp)
-                            <option value="{{ $sp->supplier_id }}">{{ $sp->supplier_nama }}</option>
-                        @endforeach
-                    </select>
-                    <small id="error-supplier_id" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label for="user_id">Pengguna</label>
+                    <label for="user_id">Pegawai</label>
                     <select name="user_id" id="user_id" class="form-control" required>
-                        <option value="">- Pilih Pengguna -</option>
+                        <option value="">- Pilih Pegawai -</option>
                         @foreach ($user as $u)
-                            <option value="{{ $u->user_id }}">{{ $u->nama }}</option>
+                            @if ($u->level->level_kode !== 'CUS')
+                                <option value="{{ $u->user_id }}">{{ $u->nama }}</option>
+                            @endif
                         @endforeach
                     </select>
                     <small id="error-user_id" class="error-text form-text text-danger"></small>
                 </div>
+                <div class="form-group">
+                    <label for="supplier_id">Supplier</label>
+                    <select name="supplier_id" id="supplier_id" class="form-control" required>
+                        <option value="">- Pilih Supplier -</option>
+                        @foreach ($supplier as $s)
+                            <option value="{{ $s->supplier_id }}">{{ $s->supplier_nama }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-supplier_id" class="error-text form-text text-danger"></small>
+                </div>
+                                               
                 <div class="form-group">
                     <label for="tanggal">Tanggal Stok</label>
                     <input value="" type="date" name="stok_tanggal" id="stok_tanggal" class="form-control" required>

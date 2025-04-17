@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -337,6 +339,153 @@ class UserController extends Controller
             }
         }
         return redirect('/');
+    }
+
+    public function show_ajax($id)
+    {
+        // Ambil data user berdasarkan ID
+        $user = UserModel::with('level')->find($id);
+     
+        return view('user.show_ajax', compact('user'));
+    }
+    
+
+    public function import()
+    {
+        return view('user.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_user' => ['required', 'mimes:xlsx', 'max:1024']
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $file = $request->file('file_user');
+
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+
+            $insert = [];
+
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'level_id'  => $value['A'],
+                            'username'  => $value['B'],
+                            'nama'      => $value['C'],
+                            'password'  => $value['D'],
+                            'created_at'  => now(),
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    UserModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function export_excel()
+    {
+        // Ambil data user beserta nama level-nya
+        $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
+            ->with('level')
+            ->orderBy('nama')
+            ->get();
+    
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Username');
+        $sheet->setCellValue('C1', 'Nama');
+        $sheet->setCellValue('D1', 'Level');
+    
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+    
+        // Isi data user
+        $baris = 2;
+        $no = 1;
+        foreach ($users as $user) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $user->username);
+            $sheet->setCellValue('C' . $baris, $user->nama);
+            $sheet->setCellValue('D' . $baris, $user->level ? $user->level->level_nama : '-');
+            $baris++;
+            $no++;
+        }
+    
+        // Set auto width kolom
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+    
+        // Set judul sheet
+        $sheet->setTitle('Data User');
+    
+        // Simpan dan kirim file ke browser
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_User_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
+        // Header response agar langsung download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+    
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
+                    ->orderBy('level_id')
+                    ->orderBy('nama')
+                    ->with('level')
+                    ->get();
+    
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        $pdf = Pdf::loadView('user.export_pdf', ['users' => $users]);
+        $pdf->setPaper('a4', 'portrait'); // ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // aktifkan jika pakai gambar
+        $pdf->render();
+    
+        return $pdf->stream('Data User '.date('Y-m-d H:i:s').'.pdf');
     }
 
 }

@@ -76,7 +76,7 @@ class AuthController extends Controller
                 'username' => $request->username,
                 'nama' => $request->nama,
                 'password' => $request->password,
-                'level_id' => 2 // default level_id untuk user biasa
+                'level_id' => 5
             ]);
     
             return response()->json([

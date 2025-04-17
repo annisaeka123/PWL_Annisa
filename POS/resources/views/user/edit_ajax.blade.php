@@ -30,7 +30,7 @@
                  </div>
                  <div class="modal-body">
                      <div class="form-group">
-                         <label>Level Pengguna</label>
+                         <label>Level Pegawai</label>
                          <select name="level_id" id="level_id" class="form-control" required>
                              <option value="">- Pilih Level -</option>
                              @foreach($level as $l)

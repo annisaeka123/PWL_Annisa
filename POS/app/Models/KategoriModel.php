@@ -10,6 +10,7 @@ class KategoriModel extends Model
     // Tentukan nama tabel jika berbeda dari default
     protected $table = 'm_kategori';  // Jika tabelnya bernama 'm_kategori'
 
+    protected $primaryKey = 'kategori_id';  
     // Tentukan kolom yang dapat diisi (fillable)
     protected $fillable = ['kategori_kode', 'kategori_nama'];
 

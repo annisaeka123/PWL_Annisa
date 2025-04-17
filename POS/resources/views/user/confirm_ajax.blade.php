@@ -35,14 +35,14 @@
                         Apakah Anda ingin menghapus data seperti di bawah ini?
                     </div>
                     <table class="table table-sm table-bordered table-striped">
-                        <tr><th class="text-right col-3">Level Pengguna :</th><td class="col-9">{{ $user->level->level_nama }}</td></tr>
+                        <tr><th class="text-right col-3">Level Pegawai :</th><td class="col-9">{{ $user->level->level_nama }}</td></tr>
                         <tr><th class="text-right col-3">Username :</th><td class="col-9">{{ $user->username }}</td></tr>
                         <tr><th class="text-right col-3">Nama :</th><td class="col-9">{{ $user->nama }}</td></tr>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
                 </div>
             </div>
         </div>

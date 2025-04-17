@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\LevelModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LevelController extends Controller
 {
@@ -18,7 +20,7 @@ class LevelController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Daftar Level untuk Pengguna'
+            'title' => 'Daftar Level untuk Pegawai'
         ];
 
         $activeMenu = 'level'; // set menu yang sedang aktif
@@ -39,26 +41,21 @@ class LevelController extends Controller
             'title' => 'Tambah level baru'
         ];
 
-        $level = LevelModel::all(); // ambil data level untuk ditampilkan di form
-        $activeMenu = 'level'; // set menu yang sedang aktif
+        $activeMenu = 'level';
 
-        return view('level.create', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
+        return view('level.create', compact('breadcrumb', 'page', 'activeMenu'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'level_kode' => 'required|string|max:10|unique:m_level,level_kode',
-            'level_nama' => 'required|string|max:100'   // nama harus diisi, berupa string, dan maksimal 100 karakter
-            
+            'level_kode' => 'required|string|unique:m_level,level_kode',
+            'level_nama' => 'required|string|max:100'
         ]);
 
-        LevelModel::create([
-            'level_kode' => $request->level_kode,
-            'level_nama' => $request->level_nama,
-        ]);
+        LevelModel::create($request->all());
 
-        return redirect('/level')->with('success', 'Level baru berhasil disimpan');
+        return redirect('/level')->with('success', 'Data level berhasil disimpan');
     }
 
     public function show($id)
@@ -131,40 +128,41 @@ class LevelController extends Controller
     }
 
     public function create_ajax()
-     {
-         return view('level.create_ajax');
-     }
+    {
+        return view('level.create_ajax');
+    }
+    // Praktikum 1 - Langkah 9
+    public function store_ajax(Request $request)
+    {
+        // cek apakah request berupa ajax
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'level_kode' => 'required|string|min:3|unique:m_level,level_kode',
+                'level_nama' => 'required|string|max:100'
+            ];
 
-     public function store_ajax(Request $request)
-     {
-         // cek apakah request berupa ajax
-         if ($request->ajax() || $request->wantsJson()) {
-             $rules = [
-                 'level_kode' => 'required|string|min:3|unique:m_level,level_kode',
-                 'level_nama' => 'required|string|max:100'
-             ];
- 
- 
-             $validator = Validator::make($request->all(), $rules);
- 
-             if ($validator->fails()) {
-                 return response()->json([
-                     'status' => false, // response status, false: error/gagal, true: berhasil
-                     'message' => 'Validasi Gagal',
-                     'msgField' => $validator->errors() // pesan error validasi
-                 ]);
-             }
- 
-             LevelModel::create($request->all());
- 
-             return response()->json([
-                 'status' => true,
-                 'message' => 'Data Level berhasil disimpan'
-             ]);
-         }
- 
-         redirect('/');
-     }
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false, // response status, false: error/gagal, true: berhasil
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors() // pesan error validasi
+                ]);
+            }
+
+            LevelModel::create($request->all());
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Level berhasil disimpan'
+            ]);
+        }
+
+        redirect('/');
+    }
+     
  
      // Ambil data level dalam bentuk json untuk datatables
      public function list(Request $request)
@@ -174,7 +172,7 @@ class LevelController extends Controller
          return DataTables::of($levels)
              ->addIndexColumn()  // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
              ->addColumn('aksi', function ($level) {  // menambahkan kolom aksi
-                 $btn = '<button onclick="modalAction(\'' . url('/level/' . $level->level_id) . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                 $btn = '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                  $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                  $btn .= '<button onclick="modalAction(\'' . url('/level/' . $level->level_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
  
@@ -256,5 +254,132 @@ class LevelController extends Controller
          }
          return redirect('/');
      }
+
+     public function show_ajax($id)
+     {
+         $level = LevelModel::find($id);
+         return view('level.show_ajax', compact('level'));
+     }
+
+         public function import()
+    {
+        return view('level.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_level' => ['required', 'mimes:xlsx', 'max:1024']
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $file = $request->file('file_level');
+
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+
+            $insert = [];
+
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'level_kode' => $value['A'],
+                            'level_nama' => $value['B'],
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    LevelModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+    public function export_excel()
+    {
+        // Ambil semua data level
+        $levels = LevelModel::select('level_id', 'level_kode', 'level_nama')->orderBy('level_nama')->get();
+    
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Level');
+        $sheet->setCellValue('C1', 'Nama Level');
+    
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+    
+        // Isi data
+        $baris = 2;
+        $no = 1;
+        foreach ($levels as $level) {
+            $sheet->setCellValue('A' . $baris, $no++);
+            $sheet->setCellValue('B' . $baris, $level->level_kode);
+            $sheet->setCellValue('C' . $baris, $level->level_nama);
+            $baris++;
+        }
+    
+        // Set kolom auto width
+        foreach (range('A', 'C') as $kolom) {
+            $sheet->getColumnDimension($kolom)->setAutoSize(true);
+        }
+    
+        // Nama file
+        $filename = 'Data_Level_' . date('Y-m-d_H-i-s') . '.xlsx';
+    
+        // Header untuk download file
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+    
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $level = LevelModel::select('level_id', 'level_kode', 'level_nama')
+                        ->orderBy('level_nama')
+                        ->get();
+    
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        $pdf = Pdf::loadView('level.export_pdf', ['level' => $level]);
+        $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render();
+    
+        return $pdf->stream('Data Level '.date('Y-m-d H:i:s').'.pdf');
+    }
+
 
 }

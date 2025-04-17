@@ -10,10 +10,10 @@
             @csrf
 
             <div class="form-group row">
-                <label for="user_id" class="col-2 control-label">Pengguna</label>
+                <label for="user_id" class="col-2 control-label">Pegawai</label>
                 <div class="col-10">
                     <select name="user_id" id="user_id" class="form-control" required>
-                        <option value="">Pilih Pengguna</option>
+                        <option value="">Pilih Pegawai</option>
                         @foreach($users as $user)
                             <option value="{{ $user->user_id }}">{{ $user->name }}</option>
                         @endforeach
