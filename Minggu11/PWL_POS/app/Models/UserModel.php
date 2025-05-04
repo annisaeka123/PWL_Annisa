@@ -2,47 +2,48 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Implementasi class Authenticatable
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserModel extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
 
-    // JOBSHEET 10 =================
+    // JOBSHEET 11 =================
 
-    // Praktikum 1
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
+        public function getJWTIdentifier() {
+            return $this->getKey();
+        }
 
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+        public function getJWTCustomClaims() {
+            return [];
+        }
 
-    protected $table = 'm_user';
-    protected $primaryKey = 'user_id';
+        protected $table = 'm_user';
+        protected $primaryKey = 'user_id';
 
-    // =================================
+        protected $fillable = [
+            'username',
+            'nama',
+            'password',
+            'level_id',
+            'image' //tambahan
+        ];
 
-    protected $fillable = ['username', 'password', 'nama', 'level_id', 'level_nama', 'created_at', 'updated_at'];
+        public function level()
+        {
+            return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+        }
 
-    protected $hidden = ['password']; // jangan di tampilkan saat select
+        protected function image(): Attribute
+        {
+            return Attribute::make(
+                get: fn ($image) => url('/storage/posts/' . $image),
+            );
+        }
 
-    protected $casts = ['password' => 'hashed']; // casting password agar otomatis di hash
-
-    /**
-     * Relasi ke tabel level
-     */
-    public function level(): BelongsTo
-    {
-        return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
-    }
+    // =============================
 
     /**
      * Mendapatkan nama role
@@ -69,3 +70,35 @@ class UserModel extends Authenticatable implements JWTSubject
     }
 
 }
+
+    // JOBSHEET 10 =================
+
+    // // Praktikum 1
+    // public function getJWTIdentifier()
+    // {
+    //     return $this->getKey();
+    // }
+
+    // public function getJWTCustomClaims()
+    // {
+    //     return [];
+    // }
+
+    // protected $table = 'm_user';
+    // protected $primaryKey = 'user_id';
+
+    // // =================================
+
+    // protected $fillable = ['username', 'password', 'nama', 'level_id', 'level_nama', 'created_at', 'updated_at'];
+
+    // protected $hidden = ['password']; // jangan di tampilkan saat select
+
+    // protected $casts = ['password' => 'hashed']; // casting password agar otomatis di hash
+
+    // /**
+    //  * Relasi ke tabel level
+    //  */
+    // public function level(): BelongsTo
+    // {
+    //     return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    // }
